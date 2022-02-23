@@ -13,6 +13,9 @@ require! {
   }: libvorbis
   \prelude-ls : {keys, each, map, apply, at}
 }
+require! buffer:{
+  Blob: Blob
+}
 encoder_set_tag = libvorbis.cwrap \encoder_set_tag, void, <[number string string]>
 set-tags = (encoder, tags)-> tags |> keys |> each (-> [encoder, it, tags.(it).to-string!]) >> (apply encoder_set_tag)
 
@@ -26,7 +29,7 @@ module.exports = class Encoder
     encoder_stream_init @encoder
   encode-from: (audio-buffer)->
     [0 til @num-channels]
-    |> map (-> audio-buffer.get-channel-data it)
+    |> map (-> audio-buffer.channelData[it])
     |> (data)~>
       buffers = []
       for i from 0 to data.0.length by 4096
